@@ -19,8 +19,8 @@
 */
 
 import Route from '@ioc:Adonis/Core/Route'
-import { createCategory } from 'App/Controllers/Http/CategoriesController'
 import { home } from 'App/Controllers/Http/HomeController'
+import { telegramQueries } from 'App/Controllers/Http/TelegramQueriesController'
 
-Route.post(`/`, createCategory)
+Route.post(`/`, telegramQueries)
 Route.get('/', home)
