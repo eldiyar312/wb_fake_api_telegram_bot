@@ -1,8 +1,8 @@
 import { sendText } from 'App/Services/TelegramBot'
 import { createCategory } from '../TGCommands/categories'
-import { createProduct } from '../TGCommands/products'
-import { CreateCommand } from '../enums'
-import { ICallbackQuery, IMessage } from '../types'
+import { createProduct, editProduct } from '../TGCommands/products'
+import { CreateCommand, UpdateCommand } from '../enums'
+import { IMessage } from '../types'
 
 export const handleMessage = (msg: IMessage, chatLastCommad: string) => {
   try {
@@ -15,25 +15,14 @@ export const handleMessage = (msg: IMessage, chatLastCommad: string) => {
         createProduct(msg)
         break
       }
-      default:
-        break
-    }
-  } catch (error) {
-    sendText(msg.chat.id, 'Ошибка при обработке сообщении')
-  }
-}
-
-export const handleCallbakQueryMessage = (msg: ICallbackQuery, chatLastCommad: string) => {
-  try {
-    switch (chatLastCommad) {
-      case CreateCommand.CREATE_CATEGORY: {
-        //
+      case UpdateCommand.UPDATE_PRODUCT: {
+        editProduct(msg)
         break
       }
       default:
         break
     }
   } catch (error) {
-    sendText(msg.message.chat.id, 'Ошибка при обработке сообщении')
+    sendText(msg.chat.id, 'Ошибка при обработке сообщении')
   }
 }

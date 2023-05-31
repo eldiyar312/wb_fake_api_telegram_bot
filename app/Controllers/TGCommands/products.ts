@@ -1,6 +1,6 @@
 import Product from 'App/Moldels/Product'
 import { answerCallbackQuery, sendMessage, sendText } from 'App/Services/TelegramBot'
-import { getIdRegex } from '../../../util/regex'
+import { getIdInStart, getIdRegex } from '../../../util/regex'
 import { DeleteCommand, UpdateCommand } from '../enums'
 import { ICallbackQuery, IMessage } from '../types'
 
@@ -52,7 +52,7 @@ export const viewProducts = async (msg: IMessage) => {
       sendMessage(msg.chat.id, {
         text: `ID: ${product.id} \nНазвание: ${product.name} \nЦена: ${product.price}\nВалюта: ${product.currency}\nБренд: ${product.brand}\nЦвет: ${product.color}\nРазмер: ${
           product.size
-        }\nПол: ${product.gender} ${product.Category.name ? '\nКатегория: ' + product.Category.name : ''}`,
+        }\nПол: ${product.gender} ${product.Category?.name ? '\nКатегория: ' + product.Category.name : ''}`,
         ...data,
       })
     })
@@ -69,14 +69,38 @@ export const deleteProduct = async (msg: ICallbackQuery) => {
 
     await Product.query().where('id', id).delete()
 
-    const data = {
-      callback_query_id: msg.id,
+    return answerCallbackQuery(msg.message.chat.id, msg.id, {
       text: 'Товар успешно удалено :)',
-    }
-
-    return answerCallbackQuery(msg.message.chat.id, data)
+    })
   } catch (error) {
     console.error(error)
     return sendText(msg.message.chat.id, 'Не верные данные')
+  }
+}
+
+export const editProduct = async (msg: IMessage) => {
+  try {
+    const id = getIdInStart(msg.text)
+    if (!id) return sendText(msg.chat.id, 'Не удалось найти нужную информацию :(')
+
+    const data = msg.text.split('\n').map((str) => str.trim())
+    if (data.length < 8 || data.length > 9) {
+      sendText(msg.chat.id, 'Недостаточно или слишком много данных')
+      return false
+    }
+
+    console.log(data)
+    const categoryId = parseInt(data[8])
+
+    const product = { name: data[1], price: parseInt(data[2]) || 0, currency: data[3], brand: data[4], color: data[5], size: data[6], gender: data[7] }
+
+    if (categoryId) await Product.updateOrCreate({ id }, { ...product, categoryId })
+    else await Product.updateOrCreate({ id }, product)
+
+    sendText(msg.chat.id, 'Товар успешно изменён :)')
+    return true
+  } catch (error) {
+    sendText(msg.chat.id, 'Не верные данные')
+    return false
   }
 }

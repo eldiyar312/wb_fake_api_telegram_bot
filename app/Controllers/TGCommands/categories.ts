@@ -43,7 +43,7 @@ export const viewCategories = async (msg: IMessage) => {
     }
 
     categories.forEach((category) => {
-      sendMessage(msg.chat.id, { text: `ID: ${category.id} \nНазвание: ${category.name} ${category.Category.name ? '\nРодитель: ' + category.Category.name : ''}`, ...data })
+      sendMessage(msg.chat.id, { text: `ID: ${category.id} \nНазвание: ${category.name} ${category.Category?.name ? '\nРодитель: ' + category.Category.name : ''}`, ...data })
     })
   } catch (error) {
     return sendText(msg.chat.id, 'Не верные данные')
@@ -57,12 +57,9 @@ export const deleteCategory = async (msg: ICallbackQuery) => {
 
     await Category.query().where('id', id).delete()
 
-    const data = {
-      callback_query_id: msg.id,
+    return answerCallbackQuery(msg.message.chat.id, msg.id, {
       text: 'Категория успешно удалено :)',
-    }
-
-    return answerCallbackQuery(msg.message.chat.id, data)
+    })
   } catch (error) {
     console.error(error)
     return sendText(msg.message.chat.id, 'Не верные данные')

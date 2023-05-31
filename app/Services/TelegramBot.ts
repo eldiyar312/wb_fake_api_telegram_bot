@@ -15,9 +15,10 @@ const sendMessage = async (chatId: number, body: { [key: string]: unknown }) => 
   })
 }
 
-const answerCallbackQuery = async (chatId: number, body: { [key: string]: unknown }) => {
+const answerCallbackQuery = async (chatId: number, callbackQueryId: string, body: { [key: string]: unknown }) => {
   return axios.post(`${TELEGRAM_API}/answerCallbackQuery`, {
     chat_id: chatId,
+    callback_query_id: callbackQueryId,
     ...body,
   })
 }
