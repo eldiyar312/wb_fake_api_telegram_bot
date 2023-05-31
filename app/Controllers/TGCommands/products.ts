@@ -14,7 +14,7 @@ export const createProduct = async (msg: IMessage) => {
 
     const categoryId = parseInt(data[7])
 
-    const product = { name: data[0], price: parseInt(data[1]), currency: data[2], brand: data[3], color: data[4], size: data[5], gender: data[6] }
+    const product = { name: data[0], price: parseInt(data[1]) || 0, currency: data[2], brand: data[3], color: data[4], size: data[5], gender: data[6] }
 
     if (categoryId) await Product.create({ ...product, categoryId })
     else await Product.create(product)
