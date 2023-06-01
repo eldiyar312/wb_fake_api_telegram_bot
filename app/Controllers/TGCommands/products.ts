@@ -19,10 +19,8 @@ export const createProduct = async (msg: IMessage) => {
     const productData = { name: data[0], price: parseInt(data[1]) || 0, currency: data[2], brand: data[3], color: data[4], size: data[5], gender: data[6] }
 
     if (categoryId) productData['category_id'] = categoryId
-    if (warehouseId) productData['warehouse_id'] = warehouseId
-    else {
+    if (!warehouseId) {
       const warehouse = await Warehouse.create({ name: 'Склад ' + Date.now(), address: 'Большой Сергиевский пер., 18', city: 'Россия', country: 'Москва' })
-      productData['warehouse_id'] = warehouse.id
       warehouseId = warehouse.id
     }
 
