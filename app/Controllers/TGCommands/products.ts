@@ -1,3 +1,4 @@
+import Database from '@ioc:Adonis/Lucid/Database'
 import Product from 'App/Moldels/Product'
 import Stock from 'App/Moldels/Stock'
 import Warehouse from 'App/Moldels/Warehouse'
@@ -39,7 +40,17 @@ export const createProduct = async (msg: IMessage) => {
 
 export const viewProducts = async (msg: IMessage) => {
   try {
-    const products = await Product.query().preload('Category')
+    const { rows: products } = await Database.rawQuery(
+      `SELECT 
+        p.*, stocks.quantity as quantity, categories.name as category_name, warehouses.name as warehouse_name
+      FROM products p
+        LEFT JOIN stocks ON stocks.product_id = p.id
+        LEFT JOIN categories ON categories.id = p.category_id
+        LEFT JOIN warehouses ON warehouses.id = stocks.warehouse_id
+      GROUP BY p.id, categories.name, stocks.quantity, warehouses.name
+      ORDER BY p.created_at DESC`
+    )
+
     if (!products || !products.length) return sendText(msg.chat.id, 'Пока нет данных :(')
 
     const data = {
@@ -63,7 +74,9 @@ export const viewProducts = async (msg: IMessage) => {
       sendMessage(msg.chat.id, {
         text: `ID: ${product.id} \nНазвание: ${product.name} \nЦена: ${product.price}\nВалюта: ${product.currency}\nБренд: ${product.brand}\nЦвет: ${product.color}\nРазмер: ${
           product.size
-        }\nПол: ${product.gender} ${product.Category?.name ? '\nКатегория: ' + product.Category.name : ''}`,
+        }\nПол: ${product.gender} ${product.category_name ? '\nКатегория: ' + product.category_name : ''} \nКоличество: ${product.quantity} ${
+          product?.warehouse_name ? '\nСклад: ' + product.warehouse_name : ''
+        }`,
         ...data,
       })
     })

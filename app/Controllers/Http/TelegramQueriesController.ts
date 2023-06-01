@@ -4,21 +4,28 @@ import { handleOtherCommands } from '../TGCommands/other'
 import { handleUpdateCommands } from '../TGCommands/update'
 import { handleViewCommands } from '../TGCommands/view'
 import { handleMessage } from '../TGMessage/handle'
-import { UpdateCommand } from '../enums'
+import { CreateCommand, DeleteCommand, OtherCommand, UpdateCommand, ViewCommand } from '../enums'
 import { TBody, TChatLastCommad } from '../types'
 
 // ^\/[a-z_]+
 const chatLastCommad: TChatLastCommad = {}
 
-const viewCommands = ['/view_products', '/view_warehouses', '/view_categories', '/view_orders', '/view_sales']
+const viewCommands: string[] = [
+  ViewCommand.VIEW_CATEGORIES,
+  ViewCommand.VIEW_WAREHOUSES,
+  ViewCommand.VIEW_PRODUCTS,
+  ViewCommand.VIEW_ORDERS,
+  ViewCommand.VIEW_SALES,
+  ViewCommand.VIEW_STOCKS,
+]
 
-const createCommands = ['/create_product', '/create_warehouse', '/create_category']
+const createCommands: string[] = [CreateCommand.CREATE_PRODUCT, CreateCommand.CREATE_WAREHOUSE, CreateCommand.CREATE_CATEGORY]
 
 const updateCommands: string[] = [UpdateCommand.UPDATE_PRODUCT]
 
-const deleteCommands = ['/delete_product', '/delete_warehouse', '/delete_category']
+const deleteCommands: string[] = [DeleteCommand.DELETE_PRODUCT, DeleteCommand.DELETE_WAREHOUSE, DeleteCommand.DELETE_CATEGORY]
 
-const otherCommands = ['/start']
+const otherCommands: string[] = [OtherCommand.START]
 
 export const telegramQueries = async ({ request, response }) => {
   try {

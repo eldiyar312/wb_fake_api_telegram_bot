@@ -4,6 +4,7 @@ import { viewCategories } from './categories'
 import { viewOrders } from './orders'
 import { viewProducts } from './products'
 import { viewSales } from './sales'
+import { viewStoks } from './stoks'
 import { viewWarehouses } from './warehouses'
 
 export const handleViewCommands = async (msg: IMessage) => {
@@ -22,6 +23,9 @@ export const handleViewCommands = async (msg: IMessage) => {
       break
     case ViewCommand.VIEW_SALES:
       viewSales(msg)
+      break
+    case ViewCommand.VIEW_STOCKS:
+      viewStoks(msg)
       break
     default:
       break

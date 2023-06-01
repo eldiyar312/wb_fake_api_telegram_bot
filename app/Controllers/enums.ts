@@ -4,6 +4,7 @@ export enum ViewCommand {
   VIEW_CATEGORIES = '/view_categories',
   VIEW_ORDERS = '/view_orders',
   VIEW_SALES = '/view_sales',
+  VIEW_STOCKS = '/view_stocks',
 }
 
 export enum CreateCommand {
@@ -20,4 +21,8 @@ export enum DeleteCommand {
 
 export enum UpdateCommand {
   UPDATE_PRODUCT = '/edit_product',
+}
+
+export enum OtherCommand {
+  START = '/start',
 }
