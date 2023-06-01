@@ -10,6 +10,7 @@ Install the dependencies and devDependencies and start the server.
 npm install
 cd build
 npm ci --production
+cp .env ./build
 node server.js
 ```
 
