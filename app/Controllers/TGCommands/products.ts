@@ -10,13 +10,14 @@ import { ICallbackQuery, IMessage } from '../types'
 export const createProduct = async (msg: IMessage) => {
   try {
     const data = msg.text.split('\n').map((str) => str.trim())
-    if (data.length < 7 || data.length > 9) {
+    if (data.length < 8 || data.length > 10) {
       sendText(msg.chat.id, 'Недостаточно или слишком много данных')
       return false
     }
 
-    const categoryId = parseInt(data[7])
-    let warehouseId = parseInt(data[8])
+    const quantity = parseInt(data[7])
+    const categoryId = parseInt(data[8])
+    let warehouseId = parseInt(data[9])
     const productData = { name: data[0], price: parseInt(data[1]) || 0, currency: data[2], brand: data[3], color: data[4], size: data[5], gender: data[6] }
 
     if (categoryId) productData['category_id'] = categoryId
@@ -27,7 +28,7 @@ export const createProduct = async (msg: IMessage) => {
 
     const product = await Product.create(productData)
 
-    await Stock.create({ quantity: 20, productId: product.id, warehouseId })
+    await Stock.create({ quantity: quantity ? quantity : 1, productId: product.id, warehouseId })
 
     sendText(msg.chat.id, `Товар ${data[0]} успешно создан`)
     return true
@@ -108,18 +109,21 @@ export const editProduct = async (msg: IMessage) => {
     if (!id) return sendText(msg.chat.id, 'Не удалось найти нужную информацию :(')
 
     const data = msg.text.split('\n').map((str) => str.trim())
-    if (data.length < 8 || data.length > 9) {
+    if (data.length < 8 || data.length > 10) {
       sendText(msg.chat.id, 'Недостаточно или слишком много данных')
       return false
     }
 
-    console.log(data)
-    const categoryId = parseInt(data[8])
+    const quantity = parseInt(data[8])
+    const categoryId = parseInt(data[9])
 
     const product = { name: data[1], price: parseInt(data[2]) || 0, currency: data[3], brand: data[4], color: data[5], size: data[6], gender: data[7] }
 
     if (categoryId) await Product.updateOrCreate({ id }, { ...product, categoryId })
     else await Product.updateOrCreate({ id }, product)
+
+    const stock = await Stock.findBy('productId', id)
+    stock && quantity && (await stock.merge({ quantity }).save())
 
     sendText(msg.chat.id, 'Товар успешно изменён :)')
     return true

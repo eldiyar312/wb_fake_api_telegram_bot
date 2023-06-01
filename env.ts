@@ -29,4 +29,5 @@ export default Env.rules({
   PG_DB_NAME: Env.schema.string(),
 
   TELEGRAM_BOT_TOKEN: Env.schema.string(),
+  TELEGRAM_BOT_CLIENT_TOKEN: Env.schema.string(),
 })

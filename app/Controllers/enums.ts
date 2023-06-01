@@ -11,6 +11,7 @@ export enum CreateCommand {
   CREATE_PRODUCT = '/create_product',
   CREATE_WAREHOUSE = '/create_warehouse',
   CREATE_CATEGORY = '/create_category',
+  CREATE_ORDER = '/create_order',
 }
 
 export enum DeleteCommand {

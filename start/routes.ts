@@ -21,6 +21,8 @@
 import Route from '@ioc:Adonis/Core/Route'
 import { home } from 'App/Controllers/Http/HomeController'
 import { telegramQueries } from 'App/Controllers/Http/TelegramQueriesController'
+import { telegramWBClientQueries } from 'App/Controllers/Http/WBClienController'
 
 Route.post(`/`, telegramQueries)
+Route.post(`/client`, telegramWBClientQueries)
 Route.get('/', home)
