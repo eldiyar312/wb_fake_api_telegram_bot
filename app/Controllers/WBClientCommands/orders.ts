@@ -36,7 +36,12 @@ export const createOrder = async (msg: ICallbackQuery) => {
     stock && (await stock.merge({ quantity: stock.quantity ? stock.quantity - 1 : 0 }).save())
 
     clientSendText(msg.message.chat.id, 'Заказ принят :)')
-    sendText(msg.message.chat.id, `${msg.from.first_name} заказал товар: ${product.name} \nКоличество: 1 \n Сумма с доставкой: ${order.totalSum} ${product.currency}`)
+    sendText(
+      msg.message.chat.id,
+      `${msg.from.first_name.slice(0, msg.from.first_name.length / 2) + '...'} заказал товар: ${product.name} \nКоличество: 1 \n Сумма с доставкой: ${order.totalSum} ${
+        product.currency
+      }`
+    )
     return true
   } catch (error) {
     console.error(error)
