@@ -1,10 +1,11 @@
 import { sendText } from 'App/Services/TelegramBot'
+import { CreateCommand } from '../enums'
 import { IMessage } from '../types'
 
 export const handleCreateCommands = async (msg: IMessage) => {
   try {
     switch (msg.text) {
-      case '/create_product': {
+      case CreateCommand.CREATE_PRODUCT: {
         const message = `
           Напишите по пунктам нужные данные одним сообщением с переходом в след. строку:
           - Название товара
@@ -19,10 +20,18 @@ export const handleCreateCommands = async (msg: IMessage) => {
         sendText(msg.chat.id, message)
         break
       }
-      case '/create_warehouse':
-        // createWarehouse()
+      case CreateCommand.CREATE_WAREHOUSE: {
+        const message = `
+          Напишите по пунктам нужные данные одним сообщением с переходом в след. строку:
+          - Название склада
+          - Адрес
+          - Страна
+          - Город
+        `
+        sendText(msg.chat.id, message)
         break
-      case '/create_category': {
+      }
+      case CreateCommand.CREATE_CATEGORY: {
         const message = `
           Напишите по пунктам нужные данные одним сообщением с переходом в след. строку:
           - Название категории

@@ -1,23 +1,20 @@
-import Category from 'App/Moldels/Category'
+import Warehouse from 'App/Moldels/Warehouse'
 import { answerCallbackQuery, sendMessage, sendText } from 'App/Services/TelegramBot'
 import { getIdRegex } from '../../../util/regex'
 import { DeleteCommand } from '../enums'
 import { ICallbackQuery, IMessage } from '../types'
 
-export const createCategory = async (msg: IMessage) => {
+export const createWarehouse = async (msg: IMessage) => {
   try {
     const data = msg.text.split('\n')
-    if (data.length < 1 || data.length > 2) {
+    if (data.length !== 4) {
       sendText(msg.chat.id, 'Недостаточно или слишком много данных')
       return false
     }
 
-    const categoryId = parseInt(data[1]?.trim())
+    await Warehouse.create({ name: data[0].trim(), address: data[1].trim(), country: data[2].trim(), city: data[3].trim() })
 
-    if (categoryId) await Category.create({ name: data[0].trim(), categoryId })
-    else await Category.create({ name: data[0].trim() })
-
-    sendText(msg.chat.id, `Категория ${data[0].trim()} успешно создан`)
+    sendText(msg.chat.id, `Склад ${data[0].trim()} успешно создан`)
     return true
   } catch (error) {
     console.error(error)
@@ -26,10 +23,10 @@ export const createCategory = async (msg: IMessage) => {
   }
 }
 
-export const viewCategories = async (msg: IMessage) => {
+export const viewWarehouses = async (msg: IMessage) => {
   try {
-    const categories = await Category.query().preload('Category')
-    if (!categories || !categories.length) return sendText(msg.chat.id, 'Пока нет данных :(')
+    const warehouses = await Warehouse.query()
+    if (!warehouses || !warehouses.length) return sendText(msg.chat.id, 'Пока нет данных :(')
 
     const data = {
       'reply_markup': {
@@ -37,30 +34,33 @@ export const viewCategories = async (msg: IMessage) => {
           [
             {
               'text': '🗑️',
-              'callback_data': DeleteCommand.DELETE_CATEGORY,
+              'callback_data': DeleteCommand.DELETE_WAREHOUSE,
             },
           ],
         ],
       },
     }
 
-    categories.forEach((category) => {
-      sendMessage(msg.chat.id, { text: `ID: ${category.id} \nНазвание: ${category.name} ${category.Category?.name ? '\nРодитель: ' + category.Category.name : ''}`, ...data })
+    warehouses.forEach((warehouse) => {
+      sendMessage(msg.chat.id, {
+        text: `ID: ${warehouse.id} \nНазвание: ${warehouse.name} \n Адрес: ${warehouse.address} \nСтрана: ${warehouse.country} \nГород: ${warehouse.city}`,
+        data,
+      })
     })
   } catch (error) {
     return sendText(msg.chat.id, 'Не верные данные')
   }
 }
 
-export const deleteCategory = async (msg: ICallbackQuery) => {
+export const deleteWarehouse = async (msg: ICallbackQuery) => {
   try {
     const id = getIdRegex(msg.message.text)
     if (!id) return sendText(msg.message.chat.id, 'Не удалось найти нужную информацию :(')
 
-    await Category.query().where('id', id).delete()
+    await Warehouse.query().where('id', id).delete()
 
     return answerCallbackQuery(msg.message.chat.id, msg.id, {
-      text: 'Категория успешно удалено :)',
+      text: 'Склад успешно удален :)',
     })
   } catch (error) {
     console.error(error)

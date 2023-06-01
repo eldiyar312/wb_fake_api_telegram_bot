@@ -31,6 +31,8 @@ export const createProduct = async (msg: IMessage) => {
 export const viewProducts = async (msg: IMessage) => {
   try {
     const products = await Product.query().preload('Category')
+    if (!products || !products.length) return sendText(msg.chat.id, 'Пока нет данных :(')
+
     const data = {
       'reply_markup': {
         'inline_keyboard': [
@@ -70,7 +72,7 @@ export const deleteProduct = async (msg: ICallbackQuery) => {
     await Product.query().where('id', id).delete()
 
     return answerCallbackQuery(msg.message.chat.id, msg.id, {
-      text: 'Товар успешно удалено :)',
+      text: 'Товар успешно удален :)',
     })
   } catch (error) {
     console.error(error)

@@ -13,7 +13,8 @@ export const handleOtherCommands = async (msg: IMessage) => {
 
 const startBot = (msg: IMessage) => {
   const message = `
-    Добро пожаловать
+    Добро пожаловать :)
+    Введите нужные комады, например: /create_category
   `
   return sendText(msg.chat.id, message)
 }

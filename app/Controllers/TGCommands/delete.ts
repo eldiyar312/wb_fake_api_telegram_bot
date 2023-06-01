@@ -3,6 +3,7 @@ import { DeleteCommand } from '../enums'
 import { ICallbackQuery } from '../types'
 import { deleteCategory } from './categories'
 import { deleteProduct } from './products'
+import { deleteWarehouse } from './warehouses'
 
 export const handleDeleteCommands = async (msg: ICallbackQuery) => {
   try {
@@ -13,6 +14,10 @@ export const handleDeleteCommands = async (msg: ICallbackQuery) => {
       }
       case DeleteCommand.DELETE_PRODUCT: {
         deleteProduct(msg)
+        break
+      }
+      case DeleteCommand.DELETE_WAREHOUSE: {
+        deleteWarehouse(msg)
         break
       }
       default:

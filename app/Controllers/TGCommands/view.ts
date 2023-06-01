@@ -1,23 +1,27 @@
+import { ViewCommand } from '../enums'
 import { IMessage } from '../types'
 import { viewCategories } from './categories'
+import { viewOrders } from './orders'
 import { viewProducts } from './products'
+import { viewSales } from './sales'
+import { viewWarehouses } from './warehouses'
 
 export const handleViewCommands = async (msg: IMessage) => {
   switch (msg.text) {
-    case '/view_products':
+    case ViewCommand.VIEW_PRODUCTS:
       viewProducts(msg)
       break
-    case '/view_warehouses':
-      // viewWarehouses()
+    case ViewCommand.VIEW_WAREHOUSES:
+      viewWarehouses(msg)
       break
-    case '/view_categories':
+    case ViewCommand.VIEW_CATEGORIES:
       viewCategories(msg)
       break
-    case '/view_orders':
-      // viewOrders()
+    case ViewCommand.VIEW_ORDERS:
+      viewOrders(msg)
       break
-    case '/view_sales':
-      // viewSales()
+    case ViewCommand.VIEW_SALES:
+      viewSales(msg)
       break
     default:
       break
