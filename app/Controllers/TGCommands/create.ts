@@ -16,6 +16,7 @@ export const handleCreateCommands = async (msg: IMessage) => {
           - Размер товара
           - Аудитория товара (мужской | женский)
           - ID категории (не обьязательно)
+          - ID Склада (не обьязательно)
         `
         sendText(msg.chat.id, message)
         break

@@ -1,4 +1,6 @@
 import Product from 'App/Moldels/Product'
+import Stock from 'App/Moldels/Stock'
+import Warehouse from 'App/Moldels/Warehouse'
 import { answerCallbackQuery, sendMessage, sendText } from 'App/Services/TelegramBot'
 import { getIdInStart, getIdRegex } from '../../../util/regex'
 import { DeleteCommand, UpdateCommand } from '../enums'
@@ -7,17 +9,26 @@ import { ICallbackQuery, IMessage } from '../types'
 export const createProduct = async (msg: IMessage) => {
   try {
     const data = msg.text.split('\n').map((str) => str.trim())
-    if (data.length < 7 || data.length > 8) {
+    if (data.length < 7 || data.length > 9) {
       sendText(msg.chat.id, 'Недостаточно или слишком много данных')
       return false
     }
 
     const categoryId = parseInt(data[7])
+    let warehouseId = parseInt(data[8])
+    const productData = { name: data[0], price: parseInt(data[1]) || 0, currency: data[2], brand: data[3], color: data[4], size: data[5], gender: data[6] }
 
-    const product = { name: data[0], price: parseInt(data[1]) || 0, currency: data[2], brand: data[3], color: data[4], size: data[5], gender: data[6] }
+    if (categoryId) productData['category_id'] = categoryId
+    if (warehouseId) productData['warehouse_id'] = warehouseId
+    else {
+      const warehouse = await Warehouse.create({ name: 'Склад ' + Date.now(), address: 'Большой Сергиевский пер., 18', city: 'Россия', country: 'Москва' })
+      productData['warehouse_id'] = warehouse.id
+      warehouseId = warehouse.id
+    }
 
-    if (categoryId) await Product.create({ ...product, categoryId })
-    else await Product.create(product)
+    const product = await Product.create(productData)
+
+    await Stock.create({ quantity: 20, productId: product.id, warehouseId })
 
     sendText(msg.chat.id, `Товар ${data[0]} успешно создан`)
     return true
