@@ -1,22 +1,19 @@
-# Telegram BOT Wildberries implantation
+# Telegram BOT
 
-## Installation
+## 1) Установка инструметов
 
-Project requires [Node.js](https://nodejs.org/) LTS or [Docker](https://www.docker.com/)
+Нужно установить [Node.js](https://nodejs.org/) LTS и [PostgreSql](https://www.postgresql.org/)
 
-Install the dependencies and devDependencies and start the server.
+Конфигурация env file:
+1) создать .env и скопировать с .env.example
+2) В файле .env надо вставить нужные данные, например токен телеграм бота и конфиги postgresql базы (пароль, имя пользователя, порт, имя базы, хост)
 
+##  2) Установка зависимостей и запуск сервера
 ```sh
 npm install
+npm run build
+cp .env ./build
 cd build
 npm ci --production
-cp .env ./build
 node server.js
-```
-
-
-Run Docker container
-
-```sh
-dokcer-comopse up
 ```
