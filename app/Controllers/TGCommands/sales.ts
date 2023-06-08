@@ -1,5 +1,6 @@
 import Sale from 'App/Moldels/Sale'
 import { sendMessage, sendText } from 'App/Services/TelegramBot'
+import { DateTime } from 'luxon'
 import { ViewCommand } from '../enums'
 import { ICallbackQuery, IMessage } from '../types'
 
@@ -37,24 +38,22 @@ export const viewSales = async (msg: IMessage) => {
 
 export const viewSalesByDate = async (msg: ICallbackQuery) => {
   try {
-    const today = new Date()
-    const oneWeekAgo = new Date()
+    const end = DateTime.now().toFormat('yyyy-MM-dd')
+    let start = DateTime.now().minus({ month: 1 }).toFormat('yyyy-MM-dd')
+
     switch (msg.data) {
       case ViewCommand.SALES_2_WEEK:
-        oneWeekAgo.setDate(today.getDate() - 14)
+        start = DateTime.now().minus({ week: 2 }).toFormat('yyyy-MM-dd')
         break
       case ViewCommand.SALES_WEEK:
-        oneWeekAgo.setDate(today.getDate() - 7)
+        start = DateTime.now().minus({ week: 1 }).toFormat('yyyy-MM-dd')
         break
       case ViewCommand.SALES_MONTH:
-        oneWeekAgo.setDate(today.getDate() - 30)
+        start = DateTime.now().minus({ month: 1 }).toFormat('yyyy-MM-dd')
         break
       default:
         break
     }
-
-    const start = oneWeekAgo.toISOString().slice(0, 10)
-    const end = today.toISOString().slice(0, 10)
 
     const sales = await Sale.query().whereBetween('created_at', [start, end]).preload('Product')
 

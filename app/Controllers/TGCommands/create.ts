@@ -44,7 +44,7 @@ export const handleCreateCommands = async (msg: IMessage) => {
         const message = `
           Напишите по пунктам нужные данные одним сообщением с переходом в след. строку:
           - Количество
-          - ID товарв
+          - ID товара
           - ID склада
         `
         sendText(msg.chat.id, message)

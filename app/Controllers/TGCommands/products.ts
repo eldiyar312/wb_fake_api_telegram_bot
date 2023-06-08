@@ -1,6 +1,5 @@
 import Database from '@ioc:Adonis/Lucid/Database'
 import Product from 'App/Moldels/Product'
-import Stock from 'App/Moldels/Stock'
 import { answerCallbackQuery, sendMessage, sendText } from 'App/Services/TelegramBot'
 import { getIdInStart, getIdRegex } from '../../../util/regex'
 import { DeleteCommand, UpdateCommand } from '../enums'
@@ -111,21 +110,17 @@ export const editProduct = async (msg: IMessage) => {
     if (!id) return sendText(msg.chat.id, 'Не удалось найти нужную информацию :(')
 
     const data = msg.text.split('\n').map((str) => str.trim())
-    if (data.length < 8 || data.length > 10) {
+    if (data.length < 8 || data.length > 9) {
       sendText(msg.chat.id, 'Недостаточно или слишком много данных')
       return false
     }
 
-    const quantity = parseInt(data[8])
-    const categoryId = parseInt(data[9])
+    const categoryId = parseInt(data[8])
 
     const product = { name: data[1], price: parseInt(data[2]) || 0, currency: data[3], brand: data[4], color: data[5], size: data[6], gender: data[7] }
 
     if (categoryId) await Product.updateOrCreate({ id }, { ...product, categoryId })
     else await Product.updateOrCreate({ id }, product)
-
-    const stock = await Stock.findBy('productId', id)
-    stock && quantity && (await stock.merge({ quantity }).save())
 
     sendText(msg.chat.id, 'Товар успешно изменён :)')
     return true
