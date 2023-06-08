@@ -2,7 +2,7 @@ import { handleCreateCommands } from '../TGCommands/create'
 import { handleDeleteCommands } from '../TGCommands/delete'
 import { handleOtherCommands } from '../TGCommands/other'
 import { handleUpdateCommands } from '../TGCommands/update'
-import { handleViewCommands } from '../TGCommands/view'
+import { handleCallbackViewCommands, handleViewCommands } from '../TGCommands/view'
 import { handleMessage } from '../TGMessage/handle'
 import { CreateCommand, DeleteCommand, OtherCommand, UpdateCommand, ViewCommand } from '../enums'
 import { TBody, TChatLastCommad } from '../types'
@@ -19,7 +19,9 @@ const viewCommands: string[] = [
   ViewCommand.VIEW_STOCKS,
 ]
 
-const createCommands: string[] = [CreateCommand.CREATE_PRODUCT, CreateCommand.CREATE_WAREHOUSE, CreateCommand.CREATE_CATEGORY]
+const viewCallbackCommands: string[] = [ViewCommand.SALES_2_WEEK, ViewCommand.SALES_MONTH, ViewCommand.SALES_WEEK]
+
+const createCommands: string[] = [CreateCommand.CREATE_PRODUCT, CreateCommand.CREATE_WAREHOUSE, CreateCommand.CREATE_CATEGORY, CreateCommand.CREATE_STOCK]
 
 const updateCommands: string[] = [UpdateCommand.UPDATE_PRODUCT]
 
@@ -57,6 +59,11 @@ export const telegramQueries = async ({ request, response }) => {
       if (deleteCommands.indexOf(body.callback_query.data) !== -1) {
         chatLastCommad[body.callback_query.message.chat.id] = body.callback_query.data
         handleDeleteCommands(body.callback_query)
+        return
+      }
+      if (viewCallbackCommands.indexOf(body.callback_query.data) !== -1) {
+        chatLastCommad[body.callback_query.message.chat.id] = body.callback_query.data
+        handleCallbackViewCommands(body.callback_query)
         return
       }
 

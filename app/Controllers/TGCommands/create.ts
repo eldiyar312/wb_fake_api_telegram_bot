@@ -15,9 +15,7 @@ export const handleCreateCommands = async (msg: IMessage) => {
           - Цвет товара
           - Размер товара
           - Аудитория товара (мужской | женский)
-          - Количество (число от 1)
           - ID категории (не обьязательно)
-          - ID Склада (не обьязательно)
         `
         sendText(msg.chat.id, message)
         break
@@ -38,6 +36,16 @@ export const handleCreateCommands = async (msg: IMessage) => {
           Напишите по пунктам нужные данные одним сообщением с переходом в след. строку:
           - Название категории
           - ID родительской категории (не обязательно)
+        `
+        sendText(msg.chat.id, message)
+        break
+      }
+      case CreateCommand.CREATE_STOCK: {
+        const message = `
+          Напишите по пунктам нужные данные одним сообщением с переходом в след. строку:
+          - Количество
+          - ID товарв
+          - ID склада
         `
         sendText(msg.chat.id, message)
         break

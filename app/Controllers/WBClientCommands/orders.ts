@@ -1,5 +1,6 @@
 import Order from 'App/Moldels/Order'
 import Product from 'App/Moldels/Product'
+import Sale from 'App/Moldels/Sale'
 import Stock from 'App/Moldels/Stock'
 import { sendText } from 'App/Services/TelegramBot'
 import { clientSendMessage, clientSendText } from 'App/Services/WBClientBot'
@@ -29,18 +30,34 @@ export const createOrder = async (msg: ICallbackQuery) => {
 
     const product = await Product.find(id)
     if (!product?.id) return clientSendText(msg.message.chat.id, 'Не удалось найти нужную информацию :(')
+    const commission = 5
 
-    const order = await Order.create({ orderPrice: product.price, totalSum: product.price + (product.price / 100) * 5, quantity: 1, productId: product.id })
+    const order = await Order.create({ orderPrice: product.price, totalSum: product.price + (product.price / 100) * commission, quantity: 1, productId: product.id })
 
     const stock = await Stock.findBy('productId', product.id)
     stock && (await stock.merge({ quantity: stock.quantity ? stock.quantity - 1 : 0 }).save())
 
+    stock &&
+      (await Sale.create({
+        productId: product.id,
+        orderId: order.id,
+        quantity: order.quantity,
+        commission,
+        totalSum: order.totalSum,
+        salesPrice: product.price,
+        paymentStatus: stock ? 'complete' : 'failed',
+      }))
+
     clientSendText(msg.message.chat.id, 'Заказ принят :)')
-    sendText(
-      msg.message.chat.id,
-      `${msg.from.first_name.slice(0, msg.from.first_name.length / 2) + '...'} заказал товар: ${product.name} \nКоличество: 1 \n Сумма с доставкой: ${order.totalSum} ${
-        product.currency
-      }`
+
+    const admins = [762978963, 318129300]
+    admins.forEach((n) =>
+      sendText(
+        n,
+        `${msg.from.first_name.slice(0, msg.from.first_name.length / 2) + '...'} заказал\nТовар: ${product.name} \nКоличество: 1 \nСумма с доставкой: ${order.totalSum} ${
+          product.currency
+        }`
+      )
     )
     return true
   } catch (error) {

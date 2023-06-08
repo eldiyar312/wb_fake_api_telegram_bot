@@ -1,6 +1,7 @@
 import { sendText } from 'App/Services/TelegramBot'
 import { createCategory } from '../TGCommands/categories'
 import { createProduct, editProduct } from '../TGCommands/products'
+import { createStok } from '../TGCommands/stoks'
 import { createWarehouse } from '../TGCommands/warehouses'
 import { CreateCommand, UpdateCommand } from '../enums'
 import { IMessage } from '../types'
@@ -18,6 +19,10 @@ export const handleMessage = (msg: IMessage, chatLastCommad: string) => {
       }
       case CreateCommand.CREATE_WAREHOUSE: {
         createWarehouse(msg)
+        break
+      }
+      case CreateCommand.CREATE_STOCK: {
+        createStok(msg)
         break
       }
       case UpdateCommand.UPDATE_PRODUCT: {
