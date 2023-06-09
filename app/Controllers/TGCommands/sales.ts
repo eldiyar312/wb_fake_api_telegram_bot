@@ -55,7 +55,7 @@ export const viewSalesByDate = async (msg: ICallbackQuery) => {
         break
     }
 
-    const sales = await Sale.query().whereBetween('created_at', [start, end]).preload('Product').groupBy('id').groupBy('payment_status')
+    const sales = await Sale.query().whereBetween('created_at', [start, end]).preload('Product').orderBy('paymentStatus', 'asc')
 
     if (!sales.length) return sendText(msg.message.chat.id, 'За этот период пока не было продаж :(')
 
