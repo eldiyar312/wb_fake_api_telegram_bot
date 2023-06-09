@@ -38,7 +38,7 @@ export const viewSales = async (msg: IMessage) => {
 
 export const viewSalesByDate = async (msg: ICallbackQuery) => {
   try {
-    const end = DateTime.now().toFormat('yyyy-MM-dd')
+    const end = DateTime.now().plus({ day: 1 }).toFormat('yyyy-MM-dd')
     let start = DateTime.now().minus({ month: 1 }).toFormat('yyyy-MM-dd')
 
     switch (msg.data) {
@@ -55,11 +55,14 @@ export const viewSalesByDate = async (msg: ICallbackQuery) => {
         break
     }
 
-    const sales = await Sale.query().whereBetween('created_at', [start, end]).preload('Product')
+    const sales = await Sale.query().whereBetween('created_at', [start, end]).preload('Product').groupBy('id').groupBy('payment_status')
 
     if (!sales.length) return sendText(msg.message.chat.id, 'За этот период пока не было продаж :(')
 
-    const messages: string[] = sales.map((sale) => `Товар: ${sale.Product.name}\nКоличестов: ${sale.quantity}\nСумма: ${sale.totalSum}\nДата: ${sale.createdAt}`)
+    const messages: string[] = sales.map(
+      (sale) =>
+        `Товар: ${sale.Product.name}\nКоличестов: ${sale.quantity}\nСумма: ${sale.totalSum}\nДата: ${sale.createdAt}${sale.paymentStatus ? `\nАдрес: ${sale.paymentStatus}` : ''}`
+    )
 
     messages.forEach((message) => {
       sendText(msg.message.chat.id, message)

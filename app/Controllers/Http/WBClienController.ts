@@ -1,6 +1,7 @@
 import { handleCreateCallbackCommands } from '../WBClientCommands/create'
 import { handleOtherCommands } from '../WBClientCommands/other'
 import { handleViewCommands } from '../WBClientCommands/view'
+import { handleMessage } from '../WBClientMessage/handle'
 import { CreateCommand, OtherCommand, ViewCommand } from '../enums'
 import { TBody, TChatLastCommad } from '../types'
 
@@ -29,6 +30,8 @@ export const telegramWBClientQueries = async ({ request, response }) => {
         handleViewCommands(body.message)
         return
       }
+
+      chatLastCommad[body.message.chat.id] && handleMessage(body.message, chatLastCommad[body.message.chat.id])
     }
 
     // when reply form message

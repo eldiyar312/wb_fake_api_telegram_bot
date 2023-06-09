@@ -35,20 +35,20 @@ export const createOrder = async (msg: ICallbackQuery) => {
     const order = await Order.create({ orderPrice: product.price, totalSum: product.price + (product.price / 100) * commission, quantity: 1, productId: product.id })
 
     const stock = await Stock.findBy('productId', product.id)
-    stock && (await stock.merge({ quantity: stock.quantity ? stock.quantity - 1 : 0 }).save())
+    if (!stock) return clientSendText(msg.message.chat.id, 'В остатках товара ничего не осталось :(')
 
-    stock &&
-      (await Sale.create({
-        productId: product.id,
-        orderId: order.id,
-        quantity: order.quantity,
-        commission,
-        totalSum: order.totalSum,
-        salesPrice: product.price,
-        paymentStatus: stock ? 'complete' : 'failed',
-      }))
+    await stock.merge({ quantity: stock.quantity ? stock.quantity - 1 : 0 }).save()
 
-    clientSendText(msg.message.chat.id, 'Заказ принят :)')
+    const sale = await Sale.create({
+      productId: product.id,
+      orderId: order.id,
+      quantity: order.quantity,
+      commission,
+      totalSum: order.totalSum,
+      salesPrice: product.price,
+    })
+
+    clientSendText(msg.message.chat.id, 'Напишите адрес/город доставки')
 
     const admins = [762978963, 318129300]
     admins.forEach((n) =>
@@ -59,7 +59,8 @@ export const createOrder = async (msg: ICallbackQuery) => {
         }`
       )
     )
-    return true
+
+    return sale.id
   } catch (error) {
     console.error(error)
     return clientSendText(msg.message.chat.id, 'Не верные данные')
