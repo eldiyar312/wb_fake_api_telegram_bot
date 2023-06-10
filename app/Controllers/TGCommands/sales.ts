@@ -1,4 +1,4 @@
-import Sale from 'App/Moldels/Sale'
+import Database from '@ioc:Adonis/Lucid/Database'
 import { sendMessage, sendText } from 'App/Services/TelegramBot'
 import { DateTime } from 'luxon'
 import { ViewCommand } from '../enums'
@@ -55,14 +55,15 @@ export const viewSalesByDate = async (msg: ICallbackQuery) => {
         break
     }
 
-    const sales = await Sale.query().whereBetween('created_at', [start, end]).preload('Product').orderBy('paymentStatus', 'asc')
+    const { rows: sales } = await Database.rawQuery(
+      `select SUM(id) as quantity, payment_status from sales 
+      where created_at >= '${start}' and created_at <= '${end}' 
+      group by payment_status`
+    )
 
     if (!sales.length) return sendText(msg.message.chat.id, 'За этот период пока не было продаж :(')
 
-    const messages: string[] = sales.map(
-      (sale) =>
-        `Товар: ${sale.Product.name}\nКоличестов: ${sale.quantity}\nСумма: ${sale.totalSum}\nДата: ${sale.createdAt}${sale.paymentStatus ? `\nАдрес: ${sale.paymentStatus}` : ''}`
-    )
+    const messages: string[] = sales.map((sale) => `Количестов: ${sale.quantity}\nАдрес: ${sale.payment_status}`)
 
     messages.forEach((message) => {
       sendText(msg.message.chat.id, message)

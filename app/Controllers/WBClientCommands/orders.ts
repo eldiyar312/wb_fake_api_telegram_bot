@@ -46,6 +46,7 @@ export const createOrder = async (msg: ICallbackQuery) => {
       commission,
       totalSum: order.totalSum,
       salesPrice: product.price,
+      paymentStatus: 'Москва',
     })
 
     clientSendText(msg.message.chat.id, 'Напишите адрес/город доставки')
