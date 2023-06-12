@@ -56,7 +56,7 @@ export const viewSalesByDate = async (msg: ICallbackQuery) => {
     }
 
     const { rows: sales } = await Database.rawQuery(
-      `select SUM(id) as quantity, payment_status from sales 
+      `select SUM(quantity) as quantity, payment_status from sales 
       where created_at >= '${start}' and created_at <= '${end}' 
       group by payment_status`
     )
